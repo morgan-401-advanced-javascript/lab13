@@ -2,6 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth.js');
 
 // TODO: Swagger Comments
 // Visible by all clients
@@ -13,7 +14,9 @@ router.get('/public', (req, res, next) => {
 
 // TODO: Swagger Comments
 // Visible by logged in clients
-router.get('/hidden', (req, res, next) => {});
+router.get('/hidden', auth, (req, res, next) => {
+  console.log(req.user);
+});
 
 // TODO: Swagger Comments
 // Visible by roles that have the "read" capability
