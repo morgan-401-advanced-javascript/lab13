@@ -13,12 +13,30 @@ const users = new mongoose.Schema({
   password: { type: String, required: true },
   email: { type: String },
   role: { type: String, default: 'user', enum: ['admin', 'editor', 'user'] },
-});
+},
+{ toObject: { virtuals: true }, toJSON: { virtuals: true } },
+);
 
 // === TODO: Implement a virtual connection between users and roles, so that we can access
 // === user capabilities easily =====
 // === Utilize virtuals and the populate() mongoose method ===
+users.virtual('capabilities', {
+  ref: 'roles',
+  localField: 'role',
+  foreignField: 'role',
+  justOne: false,
+});
 
+const populateCapabilities = function() {
+  try {
+    this.populate('capabilities');
+  } catch (e) {
+    console.error('Find Error', e);
+  }
+};
+
+// TODO: Comment
+users.pre('save', populateCapabilities);
 // === TODO: Implement a methods function can() which takes a string and returns true/false if
 // === the user has that capability ===
 
