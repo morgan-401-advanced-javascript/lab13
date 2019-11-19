@@ -13,6 +13,10 @@ router.get('/public', (req, res, next) => {
   res.status(200).json({ valid: true });
 });
 
+
+router.use(auth);
+router.use(err401);
+
 // === TODO: Define all the routes below ======
 
 // TODO: Swagger Comments
@@ -20,11 +24,11 @@ router.get('/public', (req, res, next) => {
 /**
  * @route GET /hidden
  * tests if the user is authenticated
- * @param {object} req
+ * @param {object} req 
  * @param {object} res
  * @param {function} next middleware
  */
-router.get('/hidden', auth, err401, (req, res, next) => {
+router.get('/hidden', (req, res, next) => {
   console.log('im in hiddn', req.user);
   if(req.user && req.user._id){
     console.log('user',req.user);
@@ -34,7 +38,7 @@ router.get('/hidden', auth, err401, (req, res, next) => {
   else{
     next('can not find user');
   }
-}, err403);
+});
 
 // TODO: Swagger Comments
 /**
@@ -47,7 +51,14 @@ router.get('/hidden', auth, err401, (req, res, next) => {
 // Visible by roles that have the "read" capability
 router.get('/read-only', (req, res, next) => {
   if(req.user && req.user._id){
-    res.status(200).json({valid:true});
+    let capabilities = req.user.virtualRoles.capabilities;
+
+    if(capabilities.includes('read')) {
+      res.status(200).json({ valid: true }); 
+    }
+    else {
+      next('Incorrect role access');
+    }
   }
 });
 
@@ -59,7 +70,18 @@ router.get('/read-only', (req, res, next) => {
  * @param {object} res
  * @param {function} next middleware
  */
-router.post('/create', (req, res, next) => {});
+router.post('/create', (req, res, next) => {
+  if(req.user && req.user._id) {
+    let capabilities = req.user.virtualRoles.capabilities;
+
+    if(capabilities.includes('create')) {
+      res.status(200).json({ valid: true }); 
+    }
+    else {
+      next('Incorrect role access');
+    }
+  }
+});
 
 // TODO: Swagger Comments
 /**
@@ -70,7 +92,18 @@ router.post('/create', (req, res, next) => {});
  * @param {object} res
  * @param {function} next middleware
  */
-router.put('/update/:id', (req, res, next) => {});
+router.put('/update/:id', (req, res, next) => {
+  if(req.user && req.user._id) {
+    let capabilities = req.user.virtualRoles.capabilities;
+
+    if(capabilities.includes('update')) {
+      res.status(200).json({ valid: true }); 
+    }
+    else {
+      next('Incorrect role access');
+    }
+  }
+});
 
 // TODO: Swagger Comments
 /**
@@ -80,7 +113,18 @@ router.put('/update/:id', (req, res, next) => {});
  * @param {object} res
  * @param {function} next middleware
  */
-router.delete('/delete/:id', (req, res, next) => {});
+router.delete('/delete/:id', (req, res, next) => {
+  if(req.user && req.user._id) {
+    let capabilities = req.user.virtualRoles.capabilities;
+
+    if(capabilities.includes('delete')) {
+      res.status(200).json({ valid: true }); 
+    }
+    else {
+      next('Incorrect role access');
+    }
+  }
+});
 
 // TODO: Swagger Comments
 /**
@@ -90,6 +134,20 @@ router.delete('/delete/:id', (req, res, next) => {});
  * @param {object} res
  * @param {function} next middleware
  */
-router.get('/super', (req, res, next) => {});
+router.get('/super', (req, res, next) => {
+  if(req.user && req.user._id) {
+    let capabilities = req.user.virtualRoles.capabilities;
+
+    if(capabilities.includes('superuser')) {
+      res.status(200).json({ valid: true }); 
+    }
+    else {
+      next('Incorrect role access');
+    }
+  }
+});
+
+router.use(err403);
+
 
 module.exports = router;
