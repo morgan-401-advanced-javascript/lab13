@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const roles = require('./roles-schema');
 
 /**
  * The schema definition for a user record
@@ -20,23 +21,24 @@ const users = new mongoose.Schema({
 // === TODO: Implement a virtual connection between users and roles, so that we can access
 // === user capabilities easily =====
 // === Utilize virtuals and the populate() mongoose method ===
-users.virtual('capabilities', {
+users.virtual('virtualRoles', {
   ref: 'roles',
   localField: 'role',
   foreignField: 'role',
-  justOne: false,
+  justOne: true,
 });
 
 const populateCapabilities = function() {
   try {
-    this.populate('capabilities');
+
+    this.populate('virtualRoles');
   } catch (e) {
     console.error('Find Error', e);
   }
 };
 
 // TODO: Comment
-users.pre('save', populateCapabilities);
+users.pre('findOne', populateCapabilities);
 // === TODO: Implement a methods function can() which takes a string and returns true/false if
 // === the user has that capability ===
 
@@ -73,6 +75,7 @@ users.statics.authenticateBasic = async function(auth) {
 // === TODO implement timeout functionality for this token ====
 // === You can have your code pass generateToken a flag that ===
 // === sets a long or short (5 sec) timeout ===
+
 users.methods.generateToken = function() {
   let secret = process.env.SECRET || 'this-is-my-secret';
   let data = {
@@ -81,6 +84,33 @@ users.methods.generateToken = function() {
 
   return jwt.sign(data, secret);
 };
+
+
+// users.methods.generateToken = function() {
+//   let secret = process.env.SECRET || 'this-is-my-secret';
+//   let data = {
+//     id: this._id,
+//   };
+//   let shortTime = {
+//     exp: Math.floor(Date.now() / 1000) + 5,
+//     data: data,
+//   };
+//   let longTime = {
+//     exp: Math.floor(Date.now() / 1000) + 60,
+//     data: data,
+//   };
+//   return jwt.sign(shortTime,
+//     secret);
+//   // console.log('time', time);
+// if (true) {
+//   return jwt.sign(shortTime,
+//     secret);
+// } else {
+//   return jwt.sign(longTime,
+//     secret);
+// }
+
+// };
 
 /**
  * Exporting a mongoose model generated from the above schema, statics, methods and middleware

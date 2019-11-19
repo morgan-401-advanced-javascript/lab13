@@ -25,9 +25,10 @@ router.get('/public', (req, res, next) => {
  * @param {function} next middleware
  */
 router.get('/hidden', auth, err401, (req, res, next) => {
+  console.log('im in hiddn', req.user);
   if(req.user && req.user._id){
     console.log('user',req.user);
-    console.log('user capablility?',req.user.__v);
+    console.log('user capablility?',req.user.capabilities);
     res.status(200).json({valid:true});
   }
   else{

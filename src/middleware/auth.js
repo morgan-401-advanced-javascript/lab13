@@ -43,13 +43,19 @@ async function bearerAuth(token) {
 
   try {
     data = jwt.verify(token, secret);
+    if (data.id) return await users.get(data.id);
+    else return { err: 'User not found' };
+
   } catch (e) {
-    return { err: e.name };
+    if (e.name === 'TokenExpiredError'){
+      return e.name;
+    }
   }
 
-  if (data.id) return await users.get(data.id);
-  else return { err: 'User not found' };
+
 }
+
+
 
 /**
  * This function takes an encoded username and password from a request header, decodes the username and password, and then authenticates those user credentials to (hopefully) return a user record from the database
@@ -59,6 +65,7 @@ async function bearerAuth(token) {
  */
 module.exports = async (req, res, next) => {
   let auth, authType, encodedData, user;
+  // console.log('inauth js', req.headers);
 
   if (req.headers.authorization) auth = req.headers.authorization.split(/\s+/);
 
