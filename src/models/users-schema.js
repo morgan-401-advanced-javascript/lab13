@@ -122,6 +122,11 @@ users.methods.generateToken = function(timeout) {
 
 };
 
+users.methods.can =  function(capability){
+  return this.virtual_role.capability.includes(capability);
+
+};
+
 /**
  * Exporting a mongoose model generated from the above schema, statics, methods and middleware
  * @type {mongoose model}
