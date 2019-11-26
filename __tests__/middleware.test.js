@@ -1,9 +1,9 @@
 'use strict';
 
 const { startDB, stopDB } = require('./supertester.js');
-const auth = require('../src/auth/middleware.js');
-const Users = require('../src/auth/users-model.js');
-const Roles = require('../src/auth/roles-model.js');
+const auth = require('../src/middleware/auth.js');
+const Users = require('../src/models/users-model.js');
+const Roles = require('../src/models/roles-model.js');
 
 let users = {
   admin: {
@@ -50,6 +50,11 @@ beforeAll(async done => {
 
 afterAll(stopDB);
 
+describe('middleware test', () => {
+  it('it works', () => {
+    expect(true).toBeTruthy();
+  });
+});
 /* describe('xxx', () => {
   it('xxx', () => { }); 
 }); */

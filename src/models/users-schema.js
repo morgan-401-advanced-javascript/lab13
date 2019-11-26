@@ -76,41 +76,51 @@ users.statics.authenticateBasic = async function(auth) {
 // === You can have your code pass generateToken a flag that ===
 // === sets a long or short (5 sec) timeout ===
 
-users.methods.generateToken = function() {
-  let secret = process.env.SECRET || 'this-is-my-secret';
-  let data = {
-    id: this._id,
-  };
+// users.methods.generateToken = function(timeout) {
+//   let expiry;
 
-  return jwt.sign(data, secret);
-};
+//   console.log(timeout);
+//   if (timeout === 'true'){
+//     expiry = Math.floor(Date.now() / 1000) + 5;
+//   } else{
+//     expiry = Math.floor(Date.now() / 1000) + 60;
 
-
-// users.methods.generateToken = function() {
+//   }
+//   console.log(expiry);
 //   let secret = process.env.SECRET || 'this-is-my-secret';
 //   let data = {
 //     id: this._id,
 //   };
-//   let shortTime = {
-//     exp: Math.floor(Date.now() / 1000) + 5,
-//     data: data,
-//   };
-//   let longTime = {
-//     exp: Math.floor(Date.now() / 1000) + 60,
-//     data: data,
-//   };
-//   return jwt.sign(shortTime,
-//     secret);
-//   // console.log('time', time);
-// if (true) {
-//   return jwt.sign(shortTime,
-//     secret);
-// } else {
-//   return jwt.sign(longTime,
-//     secret);
-// }
 
+//   return jwt.sign(data, secret, exp: expiry);
 // };
+
+
+users.methods.generateToken = function(timeout) {
+  let secret = process.env.SECRET || 'this-is-my-secret';
+  let data = {
+    id: this._id,
+  };
+  let shortTime = {
+    data: data,
+    exp: Math.floor(Date.now() / 1000) + 5,
+  };
+  let longTime = {
+    data: data,
+    exp: Math.floor(Date.now() / 1000) + 60,
+  };
+  //  jwt.sign(shortTime,
+  //   secret);
+  // console.log('time', time);
+  if (timeout === 'true') {
+    return jwt.sign(shortTime,
+      secret);
+  } else {
+    return jwt.sign(longTime,
+      secret);
+  }
+
+};
 
 /**
  * Exporting a mongoose model generated from the above schema, statics, methods and middleware

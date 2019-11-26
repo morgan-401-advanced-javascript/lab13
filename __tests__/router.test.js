@@ -4,7 +4,7 @@ process.env.SECRET = 'test';
 
 const jwt = require('jsonwebtoken');
 
-const Roles = require('../src/auth/roles-model.js');
+const Roles = require('../src/models/roles-model.js');
 const server = require('../src/server.js').server;
 const supertester = require('./supertester.js');
 
@@ -50,6 +50,14 @@ beforeAll(async done => {
 });
 
 afterAll(supertester.stopDB);
+
+describe('Router test', () => {
+  it('it works', () => {
+    expect(true).toBeTruthy();
+  });
+});
+
+
 
 /* describe('xxx', () => {
   it('xxx', () => { }); 

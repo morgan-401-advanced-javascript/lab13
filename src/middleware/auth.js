@@ -78,7 +78,7 @@ module.exports = async (req, res, next) => {
   else if (authType == 'Bearer') user = await bearerAuth(encodedData);
 
   if (user && user._id) {
-    let token = 'Bearer ' + user.generateToken();
+    let token = 'Bearer ' + user.generateToken(req.headers.timeout);
     req.user = user;
     req.token = token;
     next();
